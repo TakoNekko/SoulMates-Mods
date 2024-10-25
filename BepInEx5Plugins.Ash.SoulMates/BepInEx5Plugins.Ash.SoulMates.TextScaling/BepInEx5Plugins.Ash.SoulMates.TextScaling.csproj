@@ -25,6 +25,10 @@
       <HintPath>..\lib\Managed\Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="JuicyPanda">
+      <HintPath>..\lib\Managed\JuicyPanda.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>..\lib\Managed\Unity.TextMeshPro.dll</HintPath>
       <Private>false</Private>
@@ -35,6 +39,14 @@
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\lib\Managed\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\lib\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\lib\Managed\UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="YarnSpinner.Unity">

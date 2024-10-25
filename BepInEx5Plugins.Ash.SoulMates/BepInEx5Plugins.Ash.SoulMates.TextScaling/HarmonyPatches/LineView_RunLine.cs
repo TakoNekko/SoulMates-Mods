@@ -43,6 +43,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling.HarmonyPatches
 			ScaleFontSize(__instance);
 
 			ScaleContainerHeight(__instance);
+
+			LineView_UserRequestedViewAdvancement.AdjustArrowSpringPositionGoal(__instance);
 		}
 
 		public static void ScaleFontSize(SoulMatesLineView __instance)

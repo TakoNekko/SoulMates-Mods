@@ -13,15 +13,21 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 
 		private ConfigEntry<float> lineViewContainerHeightScale;
 
+		private ConfigEntry<float> lineViewArrowOffsetY;
+
 		private Plugin()
 		{
 			lineViewTextFontSizeScale = Config.Bind("Line View", "Text Font Size Scale", 2f);
 
 			lineViewContainerHeightScale = Config.Bind("Line View", "Container Height Scale", 1.15f);
 
+			lineViewArrowOffsetY = Config.Bind("Line View", "Arrow Offset Y", 1.25f);
+
 			lineViewTextFontSizeScale.SettingChanged += LineViewTextFontSizeScale_SettingChanged;
 
 			lineViewContainerHeightScale.SettingChanged += LineViewContainerHeightScale_SettingChanged;
+
+			lineViewArrowOffsetY.SettingChanged += LineViewArrowOffsetY_SettingChanged;
 		}
 
 		private void Awake()
@@ -35,6 +41,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 				HarmonyPatches.LineView_RunLine.fontSizeScale = lineViewTextFontSizeScale.Value;
 
 				HarmonyPatches.LineView_RunLine.containerHeightScale = lineViewContainerHeightScale.Value;
+
+				HarmonyPatches.LineView_UserRequestedViewAdvancement.arrowOffsetY = lineViewArrowOffsetY.Value;
 
 				harmony.PatchAll();
 			}
@@ -61,6 +69,16 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 			foreach (var lineView in FindObjectsOfType<SoulMatesLineView>())
 			{
 				HarmonyPatches.LineView_RunLine.ScaleContainerHeight(lineView);
+			}
+		}
+
+		private void LineViewArrowOffsetY_SettingChanged(object sender, EventArgs e)
+		{
+			HarmonyPatches.LineView_UserRequestedViewAdvancement.arrowOffsetY = lineViewArrowOffsetY.Value;
+
+			foreach (var lineView in FindObjectsOfType<SoulMatesLineView>())
+			{
+				HarmonyPatches.LineView_UserRequestedViewAdvancement.AdjustArrowSpringPositionGoal(lineView);
 			}
 		}
 	}
