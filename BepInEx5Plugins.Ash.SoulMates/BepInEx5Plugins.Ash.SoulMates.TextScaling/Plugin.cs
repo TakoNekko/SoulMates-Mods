@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using HarmonyLib;
 using System;
+using Yarn.Unity;
 using SoulMatesLineView = SoulMates.Dialogue.LineView;
 using SoulMatesPinnedLineView = SoulMates.Dialogue.PinnedLineView;
 
@@ -23,6 +24,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 
 		private ConfigEntry<float> pinnedLineViewTextFontSizeScale;
 
+		private ConfigEntry<float> optionsListViewTextFontSizeScale;
+
 		private Plugin()
 		{
 			lineViewTextFontSizeScale = Config.Bind("Line View", "Text Font Size Scale", 2f);
@@ -38,6 +41,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 
 			pinnedLineViewTextFontSizeScale = Config.Bind("Pinned Line View", "Text Font Size Scale", 1.5f);
 
+			optionsListViewTextFontSizeScale = Config.Bind("Options List View", "Text Font Size Scale", 1.5f);
+
 			lineViewTextFontSizeScale.SettingChanged += LineViewTextFontSizeScale_SettingChanged;
 
 			lineViewContainerHeightScale.SettingChanged += LineViewContainerHeightScale_SettingChanged;
@@ -50,6 +55,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 			lineViewCharacterNameContainerOffsetY.SettingChanged += LineViewCharacterNameContainerOffsetY_SettingChanged;
 
 			pinnedLineViewTextFontSizeScale.SettingChanged += PinnedLineViewTextFontSizeScale_SettingChanged;
+
+			optionsListViewTextFontSizeScale.SettingChanged += OptionsListViewTextFontSizeScale_SettingChanged;
 		}
 
 		private void Awake()
@@ -72,6 +79,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 				HarmonyPatches.LineView_RunLine.characterNameContainerOffsetY = lineViewCharacterNameContainerOffsetY.Value;
 
 				HarmonyPatches.PinnedLineView_SetVisible.fontSizeScale = pinnedLineViewTextFontSizeScale.Value;
+
+				HarmonyPatches.OptionsListView_Relayout.fontSizeScale = optionsListViewTextFontSizeScale.Value;
 
 				harmony.PatchAll();
 			}
@@ -158,6 +167,16 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 			foreach (var pinnedLineView in FindObjectsOfType<SoulMatesPinnedLineView>())
 			{
 				HarmonyPatches.PinnedLineView_SetVisible.ScaleFontSize(pinnedLineView);
+			}
+		}
+
+		private void OptionsListViewTextFontSizeScale_SettingChanged(object sender, EventArgs e)
+		{
+			HarmonyPatches.OptionsListView_Relayout.fontSizeScale = pinnedLineViewTextFontSizeScale.Value;
+
+			foreach (var optionsListView in FindObjectsOfType<OptionsListView>())
+			{
+				HarmonyPatches.OptionsListView_Relayout.ScaleFontSize(optionsListView);
 			}
 		}
 	}
