@@ -29,6 +29,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 
 		private ConfigEntry<float> inventoryItemTooltipFontSizeScale;
 
+		private ConfigEntry<float> cursorTooltipFontSizeScale;
+
 		private Plugin()
 		{
 			lineViewTextFontSizeScale = Config.Bind("Line View", "Text Font Size Scale", 2f);
@@ -48,6 +50,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 
 			inventoryItemTooltipFontSizeScale = Config.Bind("Inventory Item", "Tooltip Font Size Scale", 1.5f);
 
+			cursorTooltipFontSizeScale = Config.Bind("Cursor", "Tooltip Font Size Scale", 2.5f);
+
 			lineViewTextFontSizeScale.SettingChanged += LineViewTextFontSizeScale_SettingChanged;
 
 			lineViewContainerHeightScale.SettingChanged += LineViewContainerHeightScale_SettingChanged;
@@ -64,6 +68,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 			optionsListViewTextFontSizeScale.SettingChanged += OptionsListViewTextFontSizeScale_SettingChanged;
 
 			inventoryItemTooltipFontSizeScale.SettingChanged += InventoryItemTooltipFontSizeScale_SettingChanged;
+
+			cursorTooltipFontSizeScale.SettingChanged += CursorTooltipFontSizeScale_SettingChanged;
 		}
 
 		private void Awake()
@@ -90,6 +96,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 				HarmonyPatches.OptionsListView_Relayout.fontSizeScale = optionsListViewTextFontSizeScale.Value;
 
 				HarmonyPatches.InventoryItem_AttachRoomItem.fontSizeScale = inventoryItemTooltipFontSizeScale.Value;
+
+				HarmonyPatches.Cursor_DrawTooltip.fontSizeScale = cursorTooltipFontSizeScale.Value;
 
 				harmony.PatchAll();
 			}
@@ -197,6 +205,11 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 			{
 				HarmonyPatches.InventoryItem_AttachRoomItem.ScaleFontSize(inventoryItem);
 			}
+		}
+
+		private void CursorTooltipFontSizeScale_SettingChanged(object sender, EventArgs e)
+		{
+			HarmonyPatches.Cursor_DrawTooltip.fontSizeScale = cursorTooltipFontSizeScale.Value;
 		}
 	}
 }
