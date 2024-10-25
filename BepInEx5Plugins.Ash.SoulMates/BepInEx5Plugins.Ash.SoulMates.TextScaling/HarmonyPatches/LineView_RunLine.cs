@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
 using SoulMatesLineView = SoulMates.Dialogue.LineView;
 
@@ -11,10 +12,14 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling.HarmonyPatches
 	{
 		public static float fontSizeScale;
 
+		public static float containerHeightScale;
+
 		private static float? fontSizeDefault;
 
-		private static FieldInfo LineView_lineText;
+		private static float? containerHeightDefault;
 
+		private static FieldInfo LineView_lineText;
+		
 		public static bool Prepare(MethodBase original)
 		{
 			if (original is null)
@@ -36,6 +41,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling.HarmonyPatches
 		public static void Postfix(SoulMatesLineView __instance)
 		{
 			ScaleFontSize(__instance);
+
+			ScaleContainerHeight(__instance);
 		}
 
 		public static void ScaleFontSize(SoulMatesLineView __instance)
@@ -55,6 +62,20 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling.HarmonyPatches
 			}
 
 			lineText.fontSize = fontSize;
+		}
+
+		public static void ScaleContainerHeight(SoulMatesLineView __instance)
+		{
+			var container = (RectTransform)__instance.transform.parent;
+
+			if (!containerHeightDefault.HasValue)
+			{
+				containerHeightDefault = container.sizeDelta.y;
+			}
+
+			container.sizeDelta = new Vector2(
+				container.sizeDelta.x,
+				containerHeightDefault.Value * containerHeightScale);
 		}
 	}
 }

@@ -11,11 +11,17 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 	{
 		private ConfigEntry<float> lineViewTextFontSizeScale;
 
+		private ConfigEntry<float> lineViewContainerHeightScale;
+
 		private Plugin()
 		{
 			lineViewTextFontSizeScale = Config.Bind("Line View", "Text Font Size Scale", 2f);
 
+			lineViewContainerHeightScale = Config.Bind("Line View", "Container Height Scale", 1.15f);
+
 			lineViewTextFontSizeScale.SettingChanged += LineViewTextFontSizeScale_SettingChanged;
+
+			lineViewContainerHeightScale.SettingChanged += LineViewContainerHeightScale_SettingChanged;
 		}
 
 		private void Awake()
@@ -27,6 +33,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 				var harmony = new Harmony(Info.Metadata.GUID);
 
 				HarmonyPatches.LineView_RunLine.fontSizeScale = lineViewTextFontSizeScale.Value;
+
+				HarmonyPatches.LineView_RunLine.containerHeightScale = lineViewContainerHeightScale.Value;
 
 				harmony.PatchAll();
 			}
@@ -43,6 +51,16 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 			foreach (var lineView in FindObjectsOfType<SoulMatesLineView>())
 			{
 				HarmonyPatches.LineView_RunLine.ScaleFontSize(lineView);
+			}
+		}
+
+		private void LineViewContainerHeightScale_SettingChanged(object sender, EventArgs e)
+		{
+			HarmonyPatches.LineView_RunLine.containerHeightScale = lineViewContainerHeightScale.Value;
+
+			foreach (var lineView in FindObjectsOfType<SoulMatesLineView>())
+			{
+				HarmonyPatches.LineView_RunLine.ScaleContainerHeight(lineView);
 			}
 		}
 	}
