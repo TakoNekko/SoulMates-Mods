@@ -15,6 +15,11 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 
 		private ConfigEntry<float> lineViewArrowOffsetY;
 
+		private ConfigEntry<float> lineViewCharacterNameFontSizeScale;
+		private ConfigEntry<float> lineViewCharacterNameContainerWidthScale;
+		private ConfigEntry<float> lineViewCharacterNameContainerHeightScale;
+		private ConfigEntry<float> lineViewCharacterNameContainerOffsetY;
+
 		private Plugin()
 		{
 			lineViewTextFontSizeScale = Config.Bind("Line View", "Text Font Size Scale", 2f);
@@ -23,11 +28,21 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 
 			lineViewArrowOffsetY = Config.Bind("Line View", "Arrow Offset Y", 1.25f);
 
+			lineViewCharacterNameFontSizeScale = Config.Bind("Line View", "Character Name Font Size Scale", 2f);
+			lineViewCharacterNameContainerWidthScale = Config.Bind("Line View", "Character Name Container Width Scale", 1f);
+			lineViewCharacterNameContainerHeightScale = Config.Bind("Line View", "Character Name Container Height Scale", 2f);
+			lineViewCharacterNameContainerOffsetY = Config.Bind("Line View", "Character Name Container Offset Y", 1.75f);
+
 			lineViewTextFontSizeScale.SettingChanged += LineViewTextFontSizeScale_SettingChanged;
 
 			lineViewContainerHeightScale.SettingChanged += LineViewContainerHeightScale_SettingChanged;
 
 			lineViewArrowOffsetY.SettingChanged += LineViewArrowOffsetY_SettingChanged;
+
+			lineViewCharacterNameFontSizeScale.SettingChanged += LineViewCharacterNameFontSizeScale_SettingChanged;
+			lineViewCharacterNameContainerWidthScale.SettingChanged += LineViewCharacterNameContainerWidthScale_SettingChanged;
+			lineViewCharacterNameContainerHeightScale.SettingChanged += LineViewCharacterNameContainerHeightScale_SettingChanged;
+			lineViewCharacterNameContainerOffsetY.SettingChanged += LineViewCharacterNameContainerOffsetY_SettingChanged;
 		}
 
 		private void Awake()
@@ -43,6 +58,11 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 				HarmonyPatches.LineView_RunLine.containerHeightScale = lineViewContainerHeightScale.Value;
 
 				HarmonyPatches.LineView_UserRequestedViewAdvancement.arrowOffsetY = lineViewArrowOffsetY.Value;
+
+				HarmonyPatches.LineView_RunLine.characterNameFontSizeScale = lineViewCharacterNameFontSizeScale.Value;
+				HarmonyPatches.LineView_RunLine.characterNameContainerWidthScale = lineViewCharacterNameContainerWidthScale.Value;
+				HarmonyPatches.LineView_RunLine.characterNameContainerHeightScale = lineViewCharacterNameContainerHeightScale.Value;
+				HarmonyPatches.LineView_RunLine.characterNameContainerOffsetY = lineViewCharacterNameContainerOffsetY.Value;
 
 				harmony.PatchAll();
 			}
@@ -79,6 +99,46 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 			foreach (var lineView in FindObjectsOfType<SoulMatesLineView>())
 			{
 				HarmonyPatches.LineView_UserRequestedViewAdvancement.AdjustArrowSpringPositionGoal(lineView);
+			}
+		}
+
+		private void LineViewCharacterNameFontSizeScale_SettingChanged(object sender, EventArgs e)
+		{
+			HarmonyPatches.LineView_RunLine.characterNameFontSizeScale = lineViewCharacterNameFontSizeScale.Value;
+
+			foreach (var lineView in FindObjectsOfType<SoulMatesLineView>())
+			{
+				HarmonyPatches.LineView_RunLine.ScaleCharacterNameFontSize(lineView);
+			}
+		}
+
+		private void LineViewCharacterNameContainerWidthScale_SettingChanged(object sender, EventArgs e)
+		{
+			HarmonyPatches.LineView_RunLine.characterNameContainerWidthScale = lineViewCharacterNameContainerWidthScale.Value;
+
+			foreach (var lineView in FindObjectsOfType<SoulMatesLineView>())
+			{
+				HarmonyPatches.LineView_RunLine.ScaleCharacterNameContainerSize(lineView);
+			}
+		}
+
+		private void LineViewCharacterNameContainerHeightScale_SettingChanged(object sender, EventArgs e)
+		{
+			HarmonyPatches.LineView_RunLine.characterNameContainerHeightScale = lineViewCharacterNameContainerHeightScale.Value;
+
+			foreach (var lineView in FindObjectsOfType<SoulMatesLineView>())
+			{
+				HarmonyPatches.LineView_RunLine.ScaleCharacterNameContainerSize(lineView);
+			}
+		}
+
+		private void LineViewCharacterNameContainerOffsetY_SettingChanged(object sender, EventArgs e)
+		{
+			HarmonyPatches.LineView_RunLine.characterNameContainerOffsetY = lineViewCharacterNameContainerOffsetY.Value;
+
+			foreach (var lineView in FindObjectsOfType<SoulMatesLineView>())
+			{
+				HarmonyPatches.LineView_RunLine.AdjustCharacterNameContainerOffset(lineView);
 			}
 		}
 	}
