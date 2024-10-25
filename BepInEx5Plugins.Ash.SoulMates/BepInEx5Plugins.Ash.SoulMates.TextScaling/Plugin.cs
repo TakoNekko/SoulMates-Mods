@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
+using SoulMates.Inventory;
 using System;
 using Yarn.Unity;
 using SoulMatesLineView = SoulMates.Dialogue.LineView;
@@ -26,6 +27,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 
 		private ConfigEntry<float> optionsListViewTextFontSizeScale;
 
+		private ConfigEntry<float> inventoryItemTooltipFontSizeScale;
+
 		private Plugin()
 		{
 			lineViewTextFontSizeScale = Config.Bind("Line View", "Text Font Size Scale", 2f);
@@ -43,6 +46,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 
 			optionsListViewTextFontSizeScale = Config.Bind("Options List View", "Text Font Size Scale", 1.5f);
 
+			inventoryItemTooltipFontSizeScale = Config.Bind("Inventory Item", "Tooltip Font Size Scale", 1.5f);
+
 			lineViewTextFontSizeScale.SettingChanged += LineViewTextFontSizeScale_SettingChanged;
 
 			lineViewContainerHeightScale.SettingChanged += LineViewContainerHeightScale_SettingChanged;
@@ -57,6 +62,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 			pinnedLineViewTextFontSizeScale.SettingChanged += PinnedLineViewTextFontSizeScale_SettingChanged;
 
 			optionsListViewTextFontSizeScale.SettingChanged += OptionsListViewTextFontSizeScale_SettingChanged;
+
+			inventoryItemTooltipFontSizeScale.SettingChanged += InventoryItemTooltipFontSizeScale_SettingChanged;
 		}
 
 		private void Awake()
@@ -81,6 +88,8 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 				HarmonyPatches.PinnedLineView_SetVisible.fontSizeScale = pinnedLineViewTextFontSizeScale.Value;
 
 				HarmonyPatches.OptionsListView_Relayout.fontSizeScale = optionsListViewTextFontSizeScale.Value;
+
+				HarmonyPatches.InventoryItem_AttachRoomItem.fontSizeScale = inventoryItemTooltipFontSizeScale.Value;
 
 				harmony.PatchAll();
 			}
@@ -177,6 +186,16 @@ namespace BepInEx5Plugins.Ash.SoulMates.TextScaling
 			foreach (var optionsListView in FindObjectsOfType<OptionsListView>())
 			{
 				HarmonyPatches.OptionsListView_Relayout.ScaleFontSize(optionsListView);
+			}
+		}
+
+		private void InventoryItemTooltipFontSizeScale_SettingChanged(object sender, EventArgs e)
+		{
+			HarmonyPatches.InventoryItem_AttachRoomItem.fontSizeScale = inventoryItemTooltipFontSizeScale.Value;
+
+			foreach (var inventoryItem in FindObjectsOfType<InventoryItem>())
+			{
+				HarmonyPatches.InventoryItem_AttachRoomItem.ScaleFontSize(inventoryItem);
 			}
 		}
 	}
